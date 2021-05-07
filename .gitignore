@@ -1,1 +1,7 @@
+#Archivos del IDE
 /.vscode/
+#Archivos compilados
+*.exe
+*.out
+#Archivos precompilados
+*.o
