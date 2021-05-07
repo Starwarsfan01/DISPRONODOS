@@ -1,5 +1,9 @@
 /* Ruler 1         2         3         4         5         6         7        */
 
+//Estos headers fueron añadidos, no sé si los vayamos a utilizar
+#include "matrix.h"
+#include "read.h"
+
 /**************************** Symbolic  Constants *****************************/
 
 /* The following constants will be used for testing some basic circuits */
