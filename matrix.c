@@ -48,17 +48,11 @@
 
 #include "matrix.h"
 
-
-
 /************************** Prototypes of Functions ***************************/
 
 /* --------------------------- Private Functions ---------------------------- */
 
-
-
 /************************ Definition of the Structures ************************/
-
-
 
 /************************** Definitions of Functions **************************/
 
@@ -82,24 +76,21 @@
 *
 *******************************************************************************/
 
-int
-Mtx_Zero(
-double mtx[][COLS], /* In/Out: Matrix to be initiated */
-int    max_i,       /* In:     Number of rows         */
-int    max_j )      /* In:     Number of columns      */
+int Mtx_Zero(
+    double mtx[][COLS], /* In/Out: Matrix to be initiated */
+    int max_i,          /* In:     Number of rows         */
+    int max_j)          /* In:     Number of columns      */
 {
-register int jj;
-register int ii;
+    register int jj;
+    register int ii;
 
-for( ii = 0; ii < max_i; ii++ )
-    for( jj = 0; jj < max_j; jj++ )
-        mtx[ii][jj] = 0.0;
+    for (ii = 0; ii < max_i; ii++)
+        for (jj = 0; jj < max_j; jj++)
+            mtx[ii][jj] = 0.0;
 
-return 1;
+    return 1;
 
 } /* Mtx_Zero */
-
-
 
 /*FN****************************************************************************
 *
@@ -144,36 +135,33 @@ return 1;
 *
 *******************************************************************************/
 
-int
-Show_Mtx_Screen(
-double mtx[][COLS], /* In: Matrix to be printed */
-int    mtx_rows,    /* In: Number of rows       */
-int    mtx_cols,    /* In: Number of columns    */
-char   digits )     /* In: Accuracy in number of significant digits */
+int Show_Mtx_Screen(
+    double mtx[][COLS], /* In: Matrix to be printed */
+    int mtx_rows,       /* In: Number of rows       */
+    int mtx_cols,       /* In: Number of columns    */
+    char digits)        /* In: Accuracy in number of significant digits */
 {
-register int jj,  /* Index for marching through columns */
-             ii;  /* Index for marching through rows    */
-char width_value; /* Width between two values */
+    register int jj,  /* Index for marching through columns */
+        ii;           /* Index for marching through rows    */
+    char width_value; /* Width between two values */
 
-/* Part 1: Compute "width_value" from specified number of "digits" */
+    /* Part 1: Compute "width_value" from specified number of "digits" */
 
-if( digits<LOWER_ACCURACY || digits>UPPER_ACCURACY )
-    digits = DEFAULT_ACCURACY;
+    if (digits < LOWER_ACCURACY || digits > UPPER_ACCURACY)
+        digits = DEFAULT_ACCURACY;
 
-width_value = digits + CHARS_PLUS_ONE;
+    width_value = digits + CHARS_PLUS_ONE;
 
-/* Part 2: Output row by row according to specified "mtx_cols" */
+    /* Part 2: Output row by row according to specified "mtx_cols" */
 
-for( ii = 0; ii < mtx_rows; ii++ )
-    for( jj = 0; jj < mtx_cols; jj++ )
-        fprintf( stdout, "%*.*E%c",
-                width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' );
+    for (ii = 0; ii < mtx_rows; ii++)
+        for (jj = 0; jj < mtx_cols; jj++)
+            fprintf(stdout, "%*.*E%c",
+                    width_value, digits, mtx[ii][jj], (jj + 1) % mtx_cols ? ' ' : '\n');
 
-return 1;
+    return 1;
 
 } /* Show_Mtx_Screen */
-
-
 
 /*FN****************************************************************************
 *
@@ -193,29 +181,28 @@ return 1;
 *
 *******************************************************************************/
 
-int
-Mtx_Gauss_Elimination(
-double mtx[][COLS], /* In/Out: Matrix to be computed */
-int    rows,        /* In: Number of rows in matrix  */
-int    cols )       /* In: Number of cols in matrix  */
+int Mtx_Gauss_Elimination(
+    double mtx[][COLS], /* In/Out: Matrix to be computed */
+    int rows,           /* In: Number of rows in matrix  */
+    int cols)           /* In: Number of cols in matrix  */
 {
-register int jj, ii, diagonal;
-double temporal;
+    register int jj, ii, diagonal;
+    double temporal;
 
-if( cols < rows ) return 0;
+    if (cols < rows)
+        return 0;
 
-for( diagonal = 0; diagonal < rows - 1; diagonal++ )
-    for( ii = diagonal + 1; ii < rows; ii++ ) {
-        temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
-        for( jj = diagonal; jj < cols; jj++ )
-            mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
-    }
+    for (diagonal = 0; diagonal < rows - 1; diagonal++)
+        for (ii = diagonal + 1; ii < rows; ii++)
+        {
+            temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
+            for (jj = diagonal; jj < cols; jj++)
+                mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
+        }
 
-return 1;
+    return 1;
 
 } /* Mtx_Gauss_Elimination */
-
-
 
 /*FN****************************************************************************
 *
@@ -238,28 +225,25 @@ return 1;
 *
 *******************************************************************************/
 
-int
-Mtx_Back_Substitution(
-double mtx[][COLS], /* In/Out: Matrix to be computed  */
-int    order,       /* In:     Order of square matrix */
-int    column )     /* In:     Independent vector     */
+int Mtx_Back_Substitution(
+    double mtx[][COLS], /* In/Out: Matrix to be computed  */
+    int order,          /* In:     Order of square matrix */
+    int column)         /* In:     Independent vector     */
 {
-register int jj;
-register int ii;
-double temporal;
+    register int jj;
+    register int ii;
+    double temporal;
 
-for( ii = order - 1; ii >= 0; ii-- ) {
-    temporal = mtx[ii][column];
-    for( jj = ii + 1; jj < order + 1; jj++ )
-        temporal = temporal - mtx[ii][jj] * mtx[jj][column];
-    mtx[ii][column] = temporal / mtx[ii][ii];
-}
+    for (ii = order - 1; ii >= 0; ii--)
+    {
+        temporal = mtx[ii][column];
+        for (jj = ii + 1; jj < order + 1; jj++)
+            temporal = temporal - mtx[ii][jj] * mtx[jj][column];
+        mtx[ii][column] = temporal / mtx[ii][ii];
+    }
 
-return 1;
-
+    return 1;
 } /* Mtx_Back_Substitution */
-
-
 
 /*FN****************************************************************************
 *
@@ -277,16 +261,15 @@ return 1;
 *
 *******************************************************************************/
 
-int
-Write_Results(
-double mtx[][COLS], /* In: Matrix to be computed  */
-int    order,       /* In: Order of square matrix */
-int    column )     /* In: Column with voltages   */
+int Write_Results(
+    double mtx[][COLS], /* In: Matrix to be computed  */
+    int order,          /* In: Order of square matrix */
+    int column)         /* In: Column with voltages   */
 {
-for( int ii = 0; ii < order; ii++ )
-	fprintf( stdout,
-		"Voltage at node %d: %f volts\n", ii+1, mtx[ii][column] );
+    for (int ii = 0; ii < order; ii++)
+        fprintf(stdout,
+                "Voltage at node %d: %f volts\n", ii + 1, mtx[ii][column]);
 
-return 1;
+    return 1;
 
 } /* Write_Results */
