@@ -41,9 +41,9 @@
 
 /* ------------------------ Inclusion of Std Headers ------------------------ */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>	/* due to fprintf */
+#include <stdlib.h>	/* due to ... */
+#include <string.h>	/* due to ... */
 
 /* ------------------------ Inclusion of Own Headers ------------------------ */
 
@@ -191,7 +191,7 @@ int Print_Netlist(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May --/21  -----------  Initial implementation
+*   May 07/21  Ángel D. Talero  Initial implementation
 *
 *******************************************************************************/
 
@@ -207,11 +207,14 @@ int Get_Number_Nodes(
 
 	for (register int i = 0; i < size; i++)
 	{
-		if (net[i].n_pos > number_of_nodes)	number_of_nodes = net[i].n_pos;
-		if (net[i].n_neg > number_of_nodes)	number_of_nodes = net[i].n_neg;
+		if (net[i].n_pos > number_of_nodes)
+			number_of_nodes = net[i].n_pos;
+		if (net[i].n_neg > number_of_nodes)
+			number_of_nodes = net[i].n_neg;
 	}
 
-	return number_of_nodes;
+	//Include node number 0
+	return ++number_of_nodes;
 
 } /* Get_Number_Nodes */
 

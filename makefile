@@ -16,7 +16,7 @@ matrix.o: matrix.c matrix.h
 # Clean
 .PHONY: clean
 clean:
-	@rm -f *.o output
+	@rm -f *.o $(TARGET) test
 
 # Test
 .PHONY: test
