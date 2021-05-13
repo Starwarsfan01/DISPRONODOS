@@ -74,7 +74,8 @@
 
 /************************** Definition of Data Types **************************/
 
-typedef double matrix_t[ROWS][COLS];
+typedef double element_t;
+typedef element_t matrix_t[ROWS][COLS];
 
 /************************** Prototypes of Functions ***************************/
 
@@ -85,5 +86,8 @@ int Mtx_Gauss_Elimination(double (*)[COLS], int, int);
 int Mtx_Back_Substitution(double (*)[COLS], int, int);
 int Mtx_Zero(double (*)[COLS], int, int);
 int Write_Results(double (*)[COLS], int, int);
+int Mtx_Gauss_Jordan(matrix_t, int, int);
+int Mtx_Exchange_Rows(matrix_t, int, int, int);
+int Mtx_FixPresition(matrix_t, int, int, short);
 
 #endif /* MATRIX_H */

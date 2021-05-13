@@ -137,9 +137,9 @@ int main(int argc, char *argv[])
 	Nodal_Formulation(netlist, elements, matrix, nodes);
 
 	/* Part 5: Solve the matrix */
-
-	Mtx_Gauss_Elimination(matrix, nodes, nodes + 1);
-	Mtx_Back_Substitution(matrix, nodes, nodes);
+	//Mtx_Gauss_Elimination(matrix, nodes, nodes + 1);
+	//Mtx_Back_Substitution(matrix, nodes, nodes);
+	Mtx_Gauss_Jordan(matrix, nodes, nodes + 1);
 
 	/* Part 6: Deliver results to user */
 

@@ -51,10 +51,104 @@
 /************************** Prototypes of Functions ***************************/
 
 /* --------------------------- Private Functions ---------------------------- */
+static int Mtx_PivotMatrix(matrix_t, int, int);
+static double pow(double, double);
+static double abs_val(double);
 
 /************************ Definition of the Structures ************************/
 
 /************************** Definitions of Functions **************************/
+
+/* --------------------------- Private Functions ---------------------------- */
+
+/*FN****************************************************************************
+*
+*   static int Mtx_PivotMatrix(matrix_t, int, int);
+*
+*   Return:  Number "1" for SUCCEED
+*            Number "0" for FAILURE
+*
+*   Purpose: Pivot matrix
+*
+*   Plan:    It is not necessary
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+int Mtx_PivotMatrix(matrix_t mtx, int rows, int cols)
+{
+    // mtx[ROW][COL]
+    // 1 . For every column in a square matrix
+    for (register int j = 0; j < (rows < cols ? rows : cols); j++)
+    {
+        register int r_max = 0;
+        // 2. For every row in the column starting from diagonal
+        for (register int i = j; i < rows; i++)
+        {
+            if (mtx[i][j] > mtx[r_max][j])
+                r_max = i;
+        }
+
+        // 3. Exchange rows if max value is not in the diagonal
+        if (mtx[r_max][j] > mtx[j][j])
+            if (!Mtx_Exchange_Rows(mtx, cols, r_max, j))
+                return 0;
+    }
+    return 1;
+}
+
+/*FN****************************************************************************
+*
+*   static double pow(double, double);
+*
+*   Return:  <base> to the power of <exp>
+*
+*   Purpose: return the power of a number recursively
+*
+*   Plan:    It is not necessary
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+double pow(double base, double exp)
+{
+    if (exp != 0.0)
+        return (base * pow(base, exp - 1));
+    else
+        return 1;
+}
+
+/*FN****************************************************************************
+*
+*   static double abs_val(double);
+*
+*   Return:  Absolute value
+*
+*   Purpose: Absolute value of a double
+*
+*   Plan:    It is not necessary
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+double abs_val(double n)
+{
+    if (n < 0)
+        return n * -1.0;
+    return n;
+}
 
 /* ---------------------------- Public Functions ---------------------------- */
 
@@ -75,7 +169,6 @@
 *   Spt 30/17  J.C.Giraldo  Initial implementation
 *
 *******************************************************************************/
-
 int Mtx_Zero(
     double mtx[][COLS], /* In/Out: Matrix to be initiated */
     int max_i,          /* In:     Number of rows         */
@@ -134,7 +227,6 @@ int Mtx_Zero(
 *   Jul 01/07  J.C.Giraldo  Initial implementation
 *
 *******************************************************************************/
-
 int Show_Mtx_Screen(
     double mtx[][COLS], /* In: Matrix to be printed */
     int mtx_rows,       /* In: Number of rows       */
@@ -160,7 +252,6 @@ int Show_Mtx_Screen(
                     width_value, digits, mtx[ii][jj], (jj + 1) % mtx_cols ? ' ' : '\n');
 
     return 1;
-
 } /* Show_Mtx_Screen */
 
 /*FN****************************************************************************
@@ -168,24 +259,28 @@ int Show_Mtx_Screen(
 *   int Mtx_Gauss_Elimination( double mtx[ROWS][COLS], int rows, int cols );
 *
 *   Return:  Number "1" for SUCCEED
+*            Number "0" for FAILURE
 *
 *   Purpose: Solve matrix by Gaussian elimination
 *
-*   Plan:    It is not necessary
+*   Plan:   1. Apply matrix pivot
+*           2. Apply gauss elimination algorithm:
+*               A_k = A_k - A_i(a[k][i]/a[i][i]) (row echelon's form)
 *
 *   Register of Revisions:
 *
-*   DATE       RESPONSIBLE  COMMENT
+*   DATE       RESPONSIBLE      COMMENT
 *   -----------------------------------------------------------------------
-*   Spt 30/17  J.C.Giraldo  Initial implementation
+*   Spt 30/17  J.C.Giraldo      Initial implementation
+*   May 12/21  Ángel D. Talero  Implemented new algorithm
 *
 *******************************************************************************/
-
 int Mtx_Gauss_Elimination(
     double mtx[][COLS], /* In/Out: Matrix to be computed */
     int rows,           /* In: Number of rows in matrix  */
     int cols)           /* In: Number of cols in matrix  */
 {
+    /** !OLD ALGORITHM(J.C.Giraldo ) if needed
     register int jj, ii, diagonal;
     double temporal;
 
@@ -198,6 +293,21 @@ int Mtx_Gauss_Elimination(
             temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
             for (jj = diagonal; jj < cols; jj++)
                 mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
+        }
+    */
+
+    // 1. Find pivot for every column [square matrix]
+    if (!Mtx_PivotMatrix(mtx, rows, cols) ||
+        (cols < rows /* Column validation guard */))
+        return 0; //Error propagation
+
+    // 2. Transform matrix into its row echelon's form (Forward Elimination)
+    for (int i = 0; i < rows; i++)
+        for (int k = i + 1; k < rows; ++k)
+        {
+            element_t factor = mtx[k][i] / mtx[i][i];
+            for (int j = 0; j < cols; ++j)
+                mtx[k][j] -= mtx[i][j] * factor;
         }
 
     return 1;
@@ -222,14 +332,15 @@ int Mtx_Gauss_Elimination(
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
 *   Spt 30/17  J.C.Giraldo  Initial implementation
+*   May 12/21  Ángel D. Talero  Implemented new algorithm
 *
 *******************************************************************************/
-
 int Mtx_Back_Substitution(
     double mtx[][COLS], /* In/Out: Matrix to be computed  */
     int order,          /* In:     Order of square matrix */
     int column)         /* In:     Independent vector     */
 {
+    /** !OLD ALGORITHM(J.C.Giraldo ) if needed
     register int jj;
     register int ii;
     double temporal;
@@ -241,6 +352,25 @@ int Mtx_Back_Substitution(
             temporal = temporal - mtx[ii][jj] * mtx[jj][column];
         mtx[ii][column] = temporal / mtx[ii][ii];
     }
+    */
+
+    // Adjust column variable so it represents max_cols
+    column++;
+
+    // Backsubstitution
+    int l_row = order - 1;
+    for (register int i = l_row; i >= 0; i--)
+    {
+        element_t pivot = mtx[i][i];
+        for (register int k = i - 1; k >= 0; k--)
+        {
+            element_t factor = (mtx[k][i] / pivot);
+            for (register int j = 0; j < column; j++)
+                mtx[k][j] -= mtx[i][j] * factor;
+        }
+        for (register int j = 0; j < column; j++)
+            mtx[i][j] /= mtx[i][i];
+    }
 
     return 1;
 } /* Mtx_Back_Substitution */
@@ -251,7 +381,7 @@ int Mtx_Back_Substitution(
 *
 *   Purpose: Write voltages in every node
 *
-*   Return:  Nothing
+*   Return:  Number "1" for SUCCEED
 *
 *   Register of Revisions (Debugging Process):
 *
@@ -260,7 +390,6 @@ int Mtx_Back_Substitution(
 *   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
-
 int Write_Results(
     double mtx[][COLS], /* In: Matrix to be computed  */
     int order,          /* In: Order of square matrix */
@@ -273,3 +402,126 @@ int Write_Results(
     return 1;
 
 } /* Write_Results */
+
+/*FN****************************************************************************
+*
+*   void Mtx_Gauss_Jordan(matrix_t, int, int);
+*
+*   Purpose: Matrix GaussJordan elimination algorithm
+*
+*   Return:  1 for SUCCESS
+*
+*   Register of Revisions (Debugging Process):
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+int Mtx_Gauss_Jordan(matrix_t mtx, int rows, int cols)
+{
+    /*
+    // 1. Gauss elimination
+    if (!Mtx_Gauss_Elimination(mtx, rows, cols))
+        return 0; // Error propagation
+
+    // 2. Backsubstitution
+    Mtx_Back_Substitution(mtx, rows, cols - 1);
+    return 1;
+    */
+
+    int order = rows;
+    int column = cols - 1;
+
+    /* Applying Gauss Jordan Elimination */
+    for (register int i = 0; i < order; i++)
+    {
+        if (mtx[i][i] == 0.0)
+            return 0;
+
+        for (register int j = 0; j < order; j++)
+            if (i != j)
+            {
+                register element_t ratio = mtx[j][i] / mtx[i][i];
+                for (register int k = 0; k < order + 1; k++)
+                    mtx[j][k] = mtx[j][k] - ratio * mtx[i][k];
+            }
+    }
+
+    for (register int i = 0; i < order; i++)
+        mtx[i][column] = mtx[i][order] / mtx[i][i];
+
+    //Identical matrix
+    for (register int i = 0; i < order; i++)
+        for (register int j = 0; j < order; j++)
+            if (i == j)
+                mtx[i][j] = 1.0;
+            else
+                mtx[i][j] = 0.0;
+
+    return 1;
+}
+
+/*FN****************************************************************************
+*
+*   void Mtx_Exchange_Rows(matrix_t, int, int, int);
+*
+*   Purpose: Exchange two rows
+*
+*   Return:  Number "1" for SUCCEED
+*            Number "0" for FAILURE
+*
+*   Register of Revisions (Debugging Process):
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+int Mtx_Exchange_Rows(matrix_t mtx, int cols, int first, int second)
+{
+    if (first >= cols || second >= cols)
+        return 0;
+
+    for (register int i = 0; i < cols; i++)
+    {
+        element_t aux = mtx[first][i];
+        mtx[first][i] = mtx[second][i];
+        mtx[second][i] = aux;
+    }
+    return 1;
+}
+
+/*FN****************************************************************************
+*
+*   int Mtx_FixPresition(matrix_t, int, int, short);
+*
+*   Purpose: Fix matrix presition for 0 representation
+*
+*   Return:  Nothing
+*
+*   Register of Revisions (Debugging Process):
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 12/21  Ángel D. Talero  Initial implementation
+*
+*******************************************************************************/
+int Mtx_FixPresition(
+    matrix_t mtx,   /* In/Out: Matrix to be computed */
+    int rows,       /* In: Number of rows in matrix  */
+    int cols,       /* In: Number of cols in matrix  */
+    short presition /* In: presition of the number in scientific notation*/
+)
+{
+    // 1. Create a presition factor
+    element_t factor = 1.0 / (element_t)pow(10, presition);
+
+    // 2. Replace every element smaller than factor with 0
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            if ((element_t)abs_val((element_t)mtx[i][j]) < factor)
+                mtx[i][j] = 0.0;
+
+    return 1;
+}

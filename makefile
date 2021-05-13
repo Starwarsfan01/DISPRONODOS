@@ -16,10 +16,11 @@ matrix.o: matrix.c matrix.h
 # Clean
 .PHONY: clean
 clean:
-	@rm -f *.o $(TARGET) test
+	@rm -rf *.o $(TARGET)
+	@rm -rf ./test/test
 
 # Test
 .PHONY: test
-test: $(OBJS) test.c
-	$(CC) $(CFLAGS) $^ -o $@
-	@./$@
+test: $(OBJS) ./test/test.c
+	$(CC) $(CFLAGS) $^ -o ./test/$@
+	@./test/$@
