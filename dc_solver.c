@@ -61,9 +61,12 @@
 /* ------------------------ Inclusion of Own Headers ------------------------ */
 
 #include "read.h"
+
+#ifdef USE_FSM
+#include "matrix_fsm.h"
+#else
 #include "matrix.h"
-
-
+#endif
 
 /************************* Definition of Global Data **************************/
 
