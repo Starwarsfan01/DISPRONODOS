@@ -41,20 +41,24 @@
 
 /* ------------------------ Inclusion of Std Headers ------------------------ */
 
-#include <stdio.h>	/* due to fprintf */
-#include <stdlib.h>	/* due to ... */
-#include <string.h>	/* due to ... */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* ------------------------ Inclusion of Own Headers ------------------------ */
 
-#include "read.h" /* Due to: Structures in read file & prototypes */
+#include "read.h"  /* Due to: Structures in read file & prototypes */
+
+
 
 /************************** Prototypes of Functions ***************************/
 
 /* --------------------------- Private Functions ---------------------------- */
 
-static int Get_Tokens(TOKEN_T *token, char str[]);
-static int Clear_Buffers(char *b0, char *b1, char *b2, char *b3, char *b4);
+static int Get_Tokens( TOKEN_T *token, char str[] );
+static int Clear_Buffers( char *b0, char *b1, char *b2, char *b3, char *b4 );
+
+
 
 /************************** Definitions of Functions **************************/
 
@@ -76,74 +80,74 @@ static int Clear_Buffers(char *b0, char *b1, char *b2, char *b3, char *b4);
 *
 *******************************************************************************/
 
-int Read_File(
-	char filename[], /* In:  Name of input file   */
-	ELEMENT_T net[], /* Out: Array with netlist   */
-	int size)		 /* In:  number_of_nodes. Size of netlist */
+int
+Read_File(
+char      filename[], /* In:  Name of input file   */
+ELEMENT_T net[],      /* Out: Array with netlist   */ 
+int       size )      /* In:  Max. Size of netlist */
 {
-	FILE *file_ptr;
-	char string[STR_256];
+FILE *file_ptr;
+char string[STR_256];
 
-	TOKEN_T token;
+TOKEN_T token;
 
-	int lines_read = 0;
+int lines_read = 0;
 
-	/* Part 1: Open input file */
+/* Part 1: Open input file */
 
-	file_ptr = fopen(filename, "rt");
-	if (file_ptr == NULL)
-	{
-		fprintf(stderr, "Error opening file.\n");
-		exit(1);
-	}
+file_ptr = fopen( filename, "rt" );
+if( file_ptr == NULL ) {
+    fprintf( stderr, "Error opening file.\n" );
+    exit( 1 );
+}
 
-	/* Part 2: For every single line: */
+/* Part 2: For every single line: */
 
-	while (!feof(file_ptr))
-	{
-		/* Part 3: Read it, save it & extract tokens */
-		if (fgets(string, sizeof(string), file_ptr) != NULL)
-		{
+while( !feof( file_ptr ) ) {
 
-			Get_Tokens(&token, string);
+/* Part 3: Read it, save it & extract tokens */
 
-			if (token.word[0][0] == '.')
-			{
+	if( fgets( string, sizeof( string ), file_ptr ) != NULL ) {
 
-				//			Process_Command();
-			}
-			else
-			{
+		Get_Tokens( &token, string );
 
-				if (token.word[0][0] == 'R' ||
-					token.word[0][0] == 'r')
+		if( token.word[0][0] == '.' ) {
+
+//			Process_Command();
+
+		} else {
+
+			if( token.word[0][0] == 'R' ||
+				token.word[0][0] == 'r' )
 					net[lines_read].type = RESISTOR;
-				else if (token.word[0][0] == 'I' ||
-						 token.word[0][0] == 'i')
+			else if( token.word[0][0] == 'I' ||
+				token.word[0][0] == 'i' )
 					net[lines_read].type = CURRENT_SOURCE;
-				else
+			else
 					net[lines_read].type = NONE;
 
-				strcpy(net[lines_read].element, token.word[0]);
-				net[lines_read].n_pos = atoi(token.word[1]);
-				net[lines_read].n_neg = atoi(token.word[2]);
-				net[lines_read].value = atof(token.word[3]);
+			strcpy( net[lines_read].element, token.word[0] );
+			net[lines_read].n_pos = atoi( token.word[1] );
+			net[lines_read].n_neg = atoi( token.word[2] );
+			net[lines_read].value = atof( token.word[3] );
 
-			} /* else or not a dot */
+		} /* else or not a dot */
 
-		} /* if fgets */
+	} /* if fgets */
 
-		lines_read++;
+	lines_read++;
 
-	} /* while EOF */
+} /* while EOF */
 
-	/* Part 4: Close files */
+/* Part 4: Close files */
 
-	(void)fclose(file_ptr);
+(void)fclose( file_ptr );
 
-	return lines_read;
+return lines_read;
 
 } /* Read_File */
+
+
 
 /*FN****************************************************************************
 *
@@ -157,27 +161,31 @@ int Read_File(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May --/21  -----------  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial implementation
 *
 *******************************************************************************/
 
-int Print_Netlist(
-	ELEMENT_T net[], /* In: Netlist */
-	int size)		 /* In: Size of netlist */
+int
+Print_Netlist(
+ELEMENT_T net[], /* In: Netlist */
+int       size ) /* In: Size of netlist */
 {
-	int number_of_nodes = Get_Number_Elements(net, size);
+int max = Get_Number_Elements( net, size );
 
-	/*
- * En el cuerpo de esta funcion, cada equipo debe escribir un codigo que
- * realiza la funcion descrita arriba en "Purpose"
- *
- * OJO: BORRE ESTE COMENTARIO ANTES DE ENTREGAR SU CODIGO AL PROFESOR
- *
- */
+for( int ii = 0; ii < max; ii++ )
+	fprintf( stdout, "%s\t%d\t%d\t%f\n",
+		net[ii].element,
+		net[ii].n_pos,
+		net[ii].n_neg,
+		net[ii].value );
 
-	return 1;
+fprintf( stdout, "\n" );
+
+return 1;
 
 } /* Print_Netlist */
+
+
 
 /*FN****************************************************************************
 *
@@ -191,32 +199,29 @@ int Print_Netlist(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May 07/21  Ángel D. Talero  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial implementation
 *
 *******************************************************************************/
 
-int Get_Number_Nodes(
-	ELEMENT_T net[], /* In: Netlist */
-	int size)		 /* In: Size of netlist */
+int
+Get_Number_Nodes(
+ELEMENT_T net[], /* In: Netlist */
+int       size ) /* In: Size of netlist */
 {
-	int number_of_nodes = 0;
+int number_of_nodes = 0;
 
-	/* if the file is correctly implemented, number of nodes will be 
-	the largest number in the <n_pos> or <n_neg> fields in every element of
-	the net list */
+for( int ii = 0; ii < size; ii++ ) {
+	if( net[ii].n_pos > number_of_nodes )
+		number_of_nodes = net[ii].n_pos;
+	if( net[ii].n_neg > number_of_nodes )
+		number_of_nodes = net[ii].n_neg;
+}
 
-	for (register int i = 0; i < size; i++)
-	{
-		if (net[i].n_pos > number_of_nodes)
-			number_of_nodes = net[i].n_pos;
-		if (net[i].n_neg > number_of_nodes)
-			number_of_nodes = net[i].n_neg;
-	}
-
-	//Include node number 0
-	return ++number_of_nodes;
+return number_of_nodes;
 
 } /* Get_Number_Nodes */
+
+
 
 /*FN****************************************************************************
 *
@@ -230,27 +235,25 @@ int Get_Number_Nodes(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May --/21  -----------  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
 
-int Get_Number_Elements(
-	ELEMENT_T net[], /* In: Netlist */
-	int size)		 /* In: Size of netlist */
+int
+Get_Number_Elements(
+ELEMENT_T net[], /* In: Netlist */
+int       size ) /* In: Size of netlist */
 {
-	int ii = 0, number_of_elements = 0;
+int ii = 0, number_of_elements = 0;
 
-	/*
- * En el cuerpo de esta funcion, cada equipo debe escribir un codigo que
- * realiza la funcion descrita arriba en "Purpose"
- *
- * OJO: BORRE ESTE COMENTARIO ANTES DE ENTREGAR SU CODIGO AL PROFESOR
- *
- */
+while( net[ii++].element[0] != 0 )
+	number_of_elements++;
 
-	return number_of_elements;
+return number_of_elements;
 
 } /* Get_Number_Elements */
+
+
 
 /*FN****************************************************************************
 *
@@ -262,25 +265,26 @@ int Get_Number_Elements(
 *
 *   Register of Revisions (Debugging Process):
 *
-*   DATE       RESPONSIBLE  	COMMENT
+*   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May 07/21  Ángel D. Talero  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
 
-TYPE_T Get_Type(
-	ELEMENT_T net[], /* In: Netlist */
-	int size,		 /* In: Size of netlist */
-	int index)		 /* In: Element in netlist */
+int
+Get_Type(
+ELEMENT_T net[],  /* In: Netlist */
+int       size,   /* In: Size of netlist */
+int       index ) /* In: Element in netlist */
 {
-
-	// (Exception Guard) Check if index is out out bounds
-	if (index >= size)
-		return NONE;
-
-	//Return type
+if( index < Get_Number_Elements( net, size ) )
 	return net[index].type;
+else
+	return NONE;
+
 } /* Get_Type */
+
+
 
 /*FN****************************************************************************
 *
@@ -294,24 +298,24 @@ TYPE_T Get_Type(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May 07/21  Ángel D. Talero  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
 
 double
 Get_Value(
-	ELEMENT_T net[], /* In: Netlist */
-	int size,		 /* In: Size of netlist */
-	int index)		 /* In: Element in netlist */
+ELEMENT_T net[],  /* In: Netlist */
+int       size,   /* In: Size of netlist */
+int       index ) /* In: Element in netlist */
 {
-	// (Exception Guard) Check if index is out out bounds
-	if (index >= size)
-		return 0;
-
-	//Return value of component at index
+if( index < Get_Number_Elements( net, size ) )
 	return net[index].value;
+else
+	return 0;
 
 } /* Get_Value */
+
+
 
 /*FN****************************************************************************
 *
@@ -325,25 +329,24 @@ Get_Value(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May --/21  -----------  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
 
-int Get_Node_Positive(
-	ELEMENT_T net[], /* In: Netlist */
-	int size,		 /* In: Size of netlist */
-	int index)		 /* In: Element in netlist */
+int
+Get_Node_Positive(
+ELEMENT_T net[],  /* In: Netlist */
+int       size,   /* In: Size of netlist */
+int       index ) /* In: Element in netlist */
 {
-
-	/*
- * En el cuerpo de esta funcion, cada equipo debe escribir un codigo que
- * realiza la funcion descrita arriba en "Purpose"
- *
- * OJO: BORRE ESTE COMENTARIO ANTES DE ENTREGAR SU CODIGO AL PROFESOR
- *
- */
+if( index < Get_Number_Elements( net, size ) )
+	return net[index].n_pos;
+else
+	return -1;
 
 } /* Get_Node_Positive */
+
+
 
 /*FN****************************************************************************
 *
@@ -357,25 +360,24 @@ int Get_Node_Positive(
 *
 *   DATE       RESPONSIBLE  COMMENT
 *   -----------------------------------------------------------------------
-*   May --/21  -----------  Initial implementation
+*   Feb 28/19  J.C.Giraldo  Initial empty implementation
 *
 *******************************************************************************/
 
-int Get_Node_Negative(
-	ELEMENT_T net[], /* In: Netlist */
-	int size,		 /* In: Size of netlist */
-	int index)		 /* In: Element in netlist */
+int
+Get_Node_Negative(
+ELEMENT_T net[],  /* In: Netlist */
+int       size,   /* In: Size of netlist */
+int       index ) /* In: Element in netlist */
 {
-
-	/*
- * En el cuerpo de esta funcion, cada equipo debe escribir un codigo que
- * realiza la funcion descrita arriba en "Purpose"
- *
- * OJO: BORRE ESTE COMENTARIO ANTES DE ENTREGAR SU CODIGO AL PROFESOR
- *
- */
+if( index < Get_Number_Elements( net, size ) )
+	return net[index].n_neg;
+else
+	return -1;
 
 } /* Get_Node_Negative */
+
+
 
 /* --------------------------- Private Functions ---------------------------- */
 
@@ -396,13 +398,15 @@ int Get_Node_Negative(
 *******************************************************************************/
 
 static int
-Clear_Buffers(char *b0, char *b1, char *b2, char *b3, char *b4)
+Clear_Buffers( char *b0, char *b1, char *b2, char *b3, char *b4 )
 {
-	*b0 = *b1 = *b2 = *b3 = *b4 = '\0';
+*b0 = *b1 = *b2 = *b3 = *b4 = '\0';
 
-	return 1;
+return 1;
 
 } /* Clear_Buffers */
+
+
 
 /*FN****************************************************************************
 *
@@ -422,14 +426,14 @@ Clear_Buffers(char *b0, char *b1, char *b2, char *b3, char *b4)
 
 static int
 Get_Tokens(
-	TOKEN_T *token, /* Out: Returned tokens */
-	char str[])		/* In:  Line of file    */
+TOKEN_T *token, /* Out: Returned tokens */
+char    str[] ) /* In:  Line of file    */
 {
-	Clear_Buffers(token->word[0], token->word[1],
-				  token->word[2], token->word[3], token->word[4]);
-	sscanf(str, "%s %s %s %s %s", token->word[0], token->word[1],
-		   token->word[2], token->word[3], token->word[4]);
+Clear_Buffers( token->word[0], token->word[1],
+			token->word[2], token->word[3], token->word[4] );
+sscanf( str, "%s %s %s %s %s", token->word[0], token->word[1],
+			token->word[2], token->word[3], token->word[4] );
 
-	return 1;
+return 1;
 
 } /* Get_Tokens */

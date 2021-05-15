@@ -47,11 +47,9 @@
 /*                                                                            */
 /*   Register of Revisions (Debugging Process):                               */
 /*                                                                            */
-/*   DATE       RESPONSIBLE  	COMMENT                                       */
+/*   DATE       RESPONSIBLE  COMMENT                                          */
 /*   -----------------------------------------------------------------------  */
-/*   Feb 28/19  J.C.Giraldo  	Initial implementation                        */
-/* 	 May 07/21  Ángel D.Talero	Quick improvements and function 			  */
-/*								implementations 							  */
+/*   Feb 28/19  J.C.Giraldo  Initial implementation                           */
 /*                                                                            */
 /******************************************************************************/
 
@@ -63,48 +61,45 @@
 /* ---------------------- Predefined Sizes of Strings ------------------------ */
 
 #define MAX_ELEMENTS 100
-#define MAX_TOKENS 5
-#define STR_032 32
-#define STR_256 256
+#define MAX_TOKENS     5
+#define STR_032       32
+#define STR_256      256
+
+
 
 /************************** Definition of Data Types **************************/
 
 typedef char STRING_T[STR_032];
 
-typedef struct
-{
+typedef struct {
 	STRING_T word[MAX_TOKENS]; /* Single word in an input file  */
 } TOKEN_T;
 
-typedef enum
-{
-	NONE,
-	RESISTOR,
-	CURRENT_SOURCE
+typedef enum {
+	NONE, RESISTOR, CURRENT_SOURCE
 } TYPE_T;
 
-typedef struct
-{
+typedef struct {
 	STRING_T element; /* Name of component  */
-	int n_pos;		  /* Positive node (+)  */
-	int n_neg;		  /* Negative node (-)  */
-	double value;	  /* Value of component */
-	TYPE_T type;	  /* Type of component  */
+	int      n_pos;   /* Positive node (+)  */
+	int      n_neg;   /* Negative node (-)  */
+	double   value;   /* Value of component */
+	TYPE_T   type;    /* Type of component  */   
 } ELEMENT_T;
 
-typedef ELEMENT_T netlist_t[MAX_ELEMENTS];
+
 
 /************************** Prototypes of Functions ***************************/
 
 /* ---------------------------- Public Functions ---------------------------- */
 
-int Read_File(char[], ELEMENT_T[], int);
-int Print_Netlist(ELEMENT_T[], int);
-int Get_Number_Nodes(ELEMENT_T[], int);
-int Get_Number_Elements(ELEMENT_T[], int);
-TYPE_T Get_Type(ELEMENT_T[], int, int);
-int Get_Node_Positive(ELEMENT_T[], int, int);
-int Get_Node_Negative(ELEMENT_T[], int, int);
-double Get_Value(ELEMENT_T[], int, int);
+int Read_File( char [], ELEMENT_T [], int );
+int Print_Netlist( ELEMENT_T [], int );
+int Get_Number_Nodes( ELEMENT_T [], int );
+int Get_Number_Elements( ELEMENT_T [], int );
+int Get_Type( ELEMENT_T [], int, int );
+int Get_Node_Positive( ELEMENT_T [], int, int );
+int Get_Node_Negative( ELEMENT_T [], int, int );
+double Get_Value( ELEMENT_T [], int, int );
 
 #endif /* READ_H */

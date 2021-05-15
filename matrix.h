@@ -60,33 +60,27 @@
 
 /* --------------------- Predefined Sizes of Matrices ----------------------- */
 
-#define ROWS 100 /* Maximum number of rows in a matrix    */
-#define COLS 100 /* Maximum number of columns in a matrix */
+#define ROWS 100  /* Maximum number of rows in a matrix    */
+#define COLS 100  /* Maximum number of columns in a matrix */
 
 /* The following constants are exclusively used in function Show_Mtx_Screen */
 
-#define DEFAULT_ACCURACY 3 /* Number of digits by default */
-#define LOWER_ACCURACY 2   /* Minimum number of digits to be shown */
-#define UPPER_ACCURACY 18  /* Maximum number of digits to be shown */
+#define DEFAULT_ACCURACY 3  /* Number of digits by default */
+#define LOWER_ACCURACY   2  /* Minimum number of digits to be shown */
+#define UPPER_ACCURACY  18  /* Maximum number of digits to be shown */
 
-#define CHARS_PLUS_ONE 8 /* Number of chars in scientific notation */
+#define CHARS_PLUS_ONE   8  /* Number of chars in scientific notation */
 
-/************************** Definition of Data Types **************************/
 
-typedef double element_t;
-typedef element_t matrix_t[ROWS][COLS];
 
 /************************** Prototypes of Functions ***************************/
 
 /* ---------------------------- Public Functions ---------------------------- */
 
-int Show_Mtx_Screen(double (*)[COLS], int, int, char);
-int Mtx_Gauss_Elimination(double (*)[COLS], int, int);
-int Mtx_Back_Substitution(double (*)[COLS], int, int);
-int Mtx_Zero(double (*)[COLS], int, int);
-int Write_Results(double (*)[COLS], int, int);
-int Mtx_Gauss_Jordan(matrix_t, int, int);
-int Mtx_Exchange_Rows(matrix_t, int, int, int);
-int Mtx_FixPresition(matrix_t, int, int, short);
+int Show_Mtx_Screen( double (*)[COLS], int, int, char );
+int Mtx_Gauss_Elimination( double (*)[COLS], int, int );
+int Mtx_Back_Substitution( double (*)[COLS], int, int );
+int Mtx_Zero( double (*)[COLS], int, int );
+int Write_Results( double (*)[COLS], int, int );
 
 #endif /* MATRIX_H */

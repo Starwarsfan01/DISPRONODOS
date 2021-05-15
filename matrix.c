@@ -48,67 +48,19 @@
 
 #include "matrix.h"
 
+
+
 /************************** Prototypes of Functions ***************************/
 
 /* --------------------------- Private Functions ---------------------------- */
-static double pow(double, double);
-static double abs_val(double);
+
 
 
 /************************ Definition of the Structures ************************/
 
+
+
 /************************** Definitions of Functions **************************/
-
-/* --------------------------- Private Functions ---------------------------- */
-
-/*FN****************************************************************************
-*
-*   static double pow(double, double);
-*
-*   Return:  <base> to the power of <exp>
-*
-*   Purpose: return the power of a number recursively
-*
-*   Plan:    It is not necessary
-*
-*   Register of Revisions:
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   May 12/21  Ángel D. Talero  Initial implementation
-*
-*******************************************************************************/
-double pow(double base, double exp)
-{
-    if (exp != 0.0)
-        return (base * pow(base, exp - 1));
-    else
-        return 1;
-}
-
-/*FN****************************************************************************
-*
-*   static double abs_val(double);
-*
-*   Return:  Absolute value
-*
-*   Purpose: Absolute value of a double
-*
-*   Plan:    It is not necessary
-*
-*   Register of Revisions:
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   May 12/21  Ángel D. Talero  Initial implementation
-*
-*******************************************************************************/
-double abs_val(double n)
-{
-    if (n < 0)
-        return n * -1.0;
-    return n;
-}
 
 /* ---------------------------- Public Functions ---------------------------- */
 
@@ -130,21 +82,24 @@ double abs_val(double n)
 *
 *******************************************************************************/
 
-int Mtx_Zero(
-    double mtx[][COLS], /* In/Out: Matrix to be initiated */
-    int max_i,          /* In:     Number of rows         */
-    int max_j)          /* In:     Number of columns      */
+int
+Mtx_Zero(
+double mtx[][COLS], /* In/Out: Matrix to be initiated */
+int    max_i,       /* In:     Number of rows         */
+int    max_j )      /* In:     Number of columns      */
 {
-    register int jj;
-    register int ii;
+register int jj;
+register int ii;
 
-    for (ii = 0; ii < max_i; ii++)
-        for (jj = 0; jj < max_j; jj++)
-            mtx[ii][jj] = 0.0;
+for( ii = 0; ii < max_i; ii++ )
+    for( jj = 0; jj < max_j; jj++ )
+        mtx[ii][jj] = 0.0;
 
-    return 1;
+return 1;
 
 } /* Mtx_Zero */
+
+
 
 /*FN****************************************************************************
 *
@@ -189,33 +144,36 @@ int Mtx_Zero(
 *
 *******************************************************************************/
 
-int Show_Mtx_Screen(
-    double mtx[][COLS], /* In: Matrix to be printed */
-    int mtx_rows,       /* In: Number of rows       */
-    int mtx_cols,       /* In: Number of columns    */
-    char digits)        /* In: Accuracy in number of significant digits */
+int
+Show_Mtx_Screen(
+double mtx[][COLS], /* In: Matrix to be printed */
+int    mtx_rows,    /* In: Number of rows       */
+int    mtx_cols,    /* In: Number of columns    */
+char   digits )     /* In: Accuracy in number of significant digits */
 {
-    register int jj,  /* Index for marching through columns */
-        ii;           /* Index for marching through rows    */
-    char width_value; /* Width between two values */
+register int jj,  /* Index for marching through columns */
+             ii;  /* Index for marching through rows    */
+char width_value; /* Width between two values */
 
-    /* Part 1: Compute "width_value" from specified number of "digits" */
+/* Part 1: Compute "width_value" from specified number of "digits" */
 
-    if (digits < LOWER_ACCURACY || digits > UPPER_ACCURACY)
-        digits = DEFAULT_ACCURACY;
+if( digits<LOWER_ACCURACY || digits>UPPER_ACCURACY )
+    digits = DEFAULT_ACCURACY;
 
-    width_value = digits + CHARS_PLUS_ONE;
+width_value = digits + CHARS_PLUS_ONE;
 
-    /* Part 2: Output row by row according to specified "mtx_cols" */
+/* Part 2: Output row by row according to specified "mtx_cols" */
 
-    for (ii = 0; ii < mtx_rows; ii++)
-        for (jj = 0; jj < mtx_cols; jj++)
-            fprintf(stdout, "%*.*E%c",
-                    width_value, digits, mtx[ii][jj], (jj + 1) % mtx_cols ? ' ' : '\n');
+for( ii = 0; ii < mtx_rows; ii++ )
+    for( jj = 0; jj < mtx_cols; jj++ )
+        fprintf( stdout, "%*.*E%c",
+                width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' );
 
-    return 1;
+return 1;
 
 } /* Show_Mtx_Screen */
+
+
 
 /*FN****************************************************************************
 *
@@ -235,28 +193,29 @@ int Show_Mtx_Screen(
 *
 *******************************************************************************/
 
-int Mtx_Gauss_Elimination(
-    double mtx[][COLS], /* In/Out: Matrix to be computed */
-    int rows,           /* In: Number of rows in matrix  */
-    int cols)           /* In: Number of cols in matrix  */
+int
+Mtx_Gauss_Elimination(
+double mtx[][COLS], /* In/Out: Matrix to be computed */
+int    rows,        /* In: Number of rows in matrix  */
+int    cols )       /* In: Number of cols in matrix  */
 {
-    register int jj, ii, diagonal;
-    double temporal;
+register int jj, ii, diagonal;
+double temporal;
 
-    if (cols < rows)
-        return 0;
+if( cols < rows ) return 0;
 
-    for (diagonal = 0; diagonal < rows - 1; diagonal++)
-        for (ii = diagonal + 1; ii < rows; ii++)
-        {
-            temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
-            for (jj = diagonal; jj < cols; jj++)
-                mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
-        }
+for( diagonal = 0; diagonal < rows - 1; diagonal++ )
+    for( ii = diagonal + 1; ii < rows; ii++ ) {
+        temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
+        for( jj = diagonal; jj < cols; jj++ )
+            mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
+    }
 
-    return 1;
+return 1;
 
 } /* Mtx_Gauss_Elimination */
+
+
 
 /*FN****************************************************************************
 *
@@ -279,26 +238,28 @@ int Mtx_Gauss_Elimination(
 *
 *******************************************************************************/
 
-int Mtx_Back_Substitution(
-    double mtx[][COLS], /* In/Out: Matrix to be computed  */
-    int order,          /* In:     Order of square matrix */
-    int column)         /* In:     Independent vector     */
+int
+Mtx_Back_Substitution(
+double mtx[][COLS], /* In/Out: Matrix to be computed  */
+int    order,       /* In:     Order of square matrix */
+int    column )     /* In:     Independent vector     */
 {
-    register int jj;
-    register int ii;
-    double temporal;
+register int jj;
+register int ii;
+double temporal;
 
-    for (ii = order - 1; ii >= 0; ii--)
-    {
-        temporal = mtx[ii][column];
-        for (jj = ii + 1; jj < order + 1; jj++)
-            temporal = temporal - mtx[ii][jj] * mtx[jj][column];
-        mtx[ii][column] = temporal / mtx[ii][ii];
-    }
+for( ii = order - 1; ii >= 0; ii-- ) {
+    temporal = mtx[ii][column];
+    for( jj = ii + 1; jj < order + 1; jj++ )
+        temporal = temporal - mtx[ii][jj] * mtx[jj][column];
+    mtx[ii][column] = temporal / mtx[ii][ii];
+}
 
-    return 1;
+return 1;
 
 } /* Mtx_Back_Substitution */
+
+
 
 /*FN****************************************************************************
 *
@@ -316,101 +277,16 @@ int Mtx_Back_Substitution(
 *
 *******************************************************************************/
 
-int Write_Results(
-    double mtx[][COLS], /* In: Matrix to be computed  */
-    int order,          /* In: Order of square matrix */
-    int column)         /* In: Column with voltages   */
+int
+Write_Results(
+double mtx[][COLS], /* In: Matrix to be computed  */
+int    order,       /* In: Order of square matrix */
+int    column )     /* In: Column with voltages   */
 {
-    for (int ii = 0; ii < order; ii++)
-        fprintf(stdout,
-                "Voltage at node %d: %f volts\n", ii + 1, mtx[ii][column]);
+for( int ii = 0; ii < order; ii++ )
+	fprintf( stdout,
+		"Voltage at node %d: %f volts\n", ii+1, mtx[ii][column] );
 
-    return 1;
+return 1;
 
 } /* Write_Results */
-
-/*FN****************************************************************************
-*
-*   void Mtx_Gauss_Jordan(matrix_t, int, int);
-*
-*   Purpose: Matrix GaussJordan elimination algorithm
-*
-*   Return:  1 for SUCCESS
-*
-*   Register of Revisions (Debugging Process):
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   May 12/21  Ángel D. Talero  Initial implementation
-*
-*******************************************************************************/
-int Mtx_Gauss_Jordan(matrix_t mtx, int rows, int cols)
-{
-    Mtx_Gauss_Elimination(mtx, rows, cols);
-    Mtx_Back_Substitution(mtx, rows, cols - 1);
-    return 1;
-}
-
-/*FN****************************************************************************
-*
-*   void Mtx_Exchange_Rows(matrix_t, int, int, int);
-*
-*   Purpose: Exchange two rows
-*
-*   Return:  Number "1" for SUCCEED
-*            Number "0" for FAILURE
-*
-*   Register of Revisions (Debugging Process):
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   May 12/21  Ángel D. Talero  Initial implementation
-*
-*******************************************************************************/
-int Mtx_Exchange_Rows(matrix_t mtx, int cols, int first, int second)
-{
-    if (first >= cols || second >= cols)
-        return 0;
-
-    for (register int i = 0; i < cols; i++)
-    {
-        element_t aux = mtx[first][i];
-        mtx[first][i] = mtx[second][i];
-        mtx[second][i] = aux;
-    }
-    return 1;
-}
-
-/*FN****************************************************************************
-*
-*   int Mtx_FixPresition(matrix_t, int, int, short);
-*
-*   Purpose: Fix matrix presition for 0 representation
-*
-*   Return:  Nothing
-*
-*   Register of Revisions (Debugging Process):
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   May 12/21  Ángel D. Talero  Initial implementation
-*
-*******************************************************************************/
-int Mtx_FixPresition(
-    matrix_t mtx,   /* In/Out: Matrix to be computed */
-    int rows,       /* In: Number of rows in matrix  */
-    int cols,       /* In: Number of cols in matrix  */
-    short presition /* In: presition of the number in scientific notation*/
-)
-{
-    // 1. Create a presition factor
-    element_t factor = 1.0 / (element_t)pow(10, presition);
-
-    // 2. Replace every element smaller than factor with 0
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            if ((element_t)abs_val((element_t)mtx[i][j]) < factor)
-                mtx[i][j] = 0.0;
-
-    return 1;
-}
