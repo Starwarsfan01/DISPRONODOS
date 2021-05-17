@@ -93,12 +93,16 @@ int main()
 
     //show_Mtx_Sreen
     int   mtx_rows;
-    int    mtx_cols;
-    char   digits;
+    int   mtx_cols;
+    char  digits;
     double mtx[ROWS][COLS];
 
+    //Mtx_Gauss_Elimination
+    int rows;      
+    int cols;
+
     STATE_T state = Mtx_Zero;
-    while(TRUE)
+    while(1)
     {
         switch (state)
         {
@@ -113,6 +117,7 @@ int main()
                         mtx[ii][jj] = 0.0;//en la posicion mtx(ii,jj) coloca 0
                     }
                 }
+                state = Show_Mtx_Screen;
             break;
             
             case Show_Mtx_Screen:
@@ -139,18 +144,45 @@ int main()
                                     width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' ); //Imprime el número y luego verifica si JJ está en la última columna, si está en la ultima columna imprime salto de línea, de lo contrario, imprime un espacio en blanco
                         }
                     }
+                    state = Mtx_Gauss_Elimination;
             break;
             
             case Mtx_Gauss_Elimination:
-                /* code */
+                register int jj; 
+                register int ii; 
+                char width_value;
+
+                if( digits<LOWER_ACCURACY || digits>UPPER_ACCURACY ) //Si el dígito introducido está fuera de límites
+                    digits = DEFAULT_ACCURACY;  //El digito introducido se asigna al valor por defecto [3]
+
+                width_value = digits + CHARS_PLUS_ONE;  //Se le asigna al tamaño del espacio en blanco el valor de el dígito introducido + 8 digitos
+
+                for( ii = 0; ii < mtx_rows; ii++ )  //Por cada fila de la matrix
+                    for( jj = 0; jj < mtx_cols; jj++ )  //Por cada columna de la matrix
+                        fprintf( stdout, "%*.*E%c", //Imprime <width_value> espacios en blanco seguido de un número en notación científica con <digits> cantidad de dígitos
+                                width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' ); //Imprime el número y luego verifica si JJ está en la última columna, si está en la ultima columna imprime salto de línea, de lo contrario, imprime un espacio en blanco
+
+                
+                state = Mtx_Mtx_Back_Substitution;
             break;
 
             case Mtx_Mtx_Back_Substitution:
-                /* code */
-            break;
+                register int jj;//la variable entera ii es puesta en el register, lugar mas rapido de acceder que la memoria
+                register int ii;//la variable entera jj es puesta en el register, lugar mas rapido de acceder que la memoria
+                double temporal;
+
+                for( ii = order - 1; ii >= 0; ii-- ) { //ciclo for que inicia con ii==order-1; acaba cuando ii>=0; decrementa ii en 1 en cada iteracion
+                temporal = mtx[ii][column];//iguala temporal con la fila ii en la columna column de la funcion mtx[][]
+                for( jj = ii + 1; jj < order + 1; jj++ ) //ciclo for que inicia con jj==ii+1; acaba cuando jj<order+1; incrementa jj en 1 en cada iteracion
+                temporal = temporal - mtx[ii][jj] * mtx[jj][column];//iguala temporal con temporal temporal - mtx[ii][jj] * mtx[jj][column]
+                mtx[ii][column] = temporal / mtx[ii][ii];//iguala la fila ii en la columna column de la funcion mtx con temporal/la fila ii en la columna ii de la funcion mtx
+                }
+                state = Write_Results;
+                break;
 
             case Write_Results:
-                /* code */
+               for( int ii = 0; ii < order; ii++ )//ciclo for que inicia con ii==0; acaba cuando ii<order; incrementa ii en 1 en cada iteracion
+	            fprintf( stdout,"Voltage at node %d: %f volts\n", ii+1, mtx[ii][column] ); /* code */
             break;
         }
         
