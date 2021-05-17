@@ -11,6 +11,3 @@
 *.so
 *.lib
 *.dll
-
-#Test files
-/test/
