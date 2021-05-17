@@ -86,105 +86,104 @@ typedef enum {Mtx_Zero, Show_Mtx_Screen, Mtx_Gauss_Elimination, Mtx_Mtx_Back_Sub
 
 int main()
 {
-    //Mtx_zero
-    int max_i;
-    int max_j;
-    double mtx[ROWS][COLS];
 
-    //show_Mtx_Sreen
-    int   mtx_rows;
-    int   mtx_cols;
-    char  digits;
-    double mtx[ROWS][COLS];
+}
 
-    //Mtx_Gauss_Elimination
-    int rows;      
-    int cols;
+int Mtx_Zero(double mtx[][COLS], int max_i, int max_j ) 
+{
 
-    STATE_T state = Mtx_Zero;
+    typedef enum{STATE0, STATE1, STATE2};
+    static state = STATE1;
+
+    register int ii;
+    register int jj;
+
+    ii=0;
+
     while(1)
     {
         switch (state)
         {
-            case Mtx_Zero:
-                register int jj; // la variable entera jj es puesta en el register, lugar mas rapido de acceder que la memoria
-                register int ii; // la variable entera jj es puesta en el register, lugar mas rapido de acceder que la memoria
-
-                for( ii = 0; ii < max_i; ii++ ) //ciclo for que inicia con ii==0 acaba cuando ii<max_i, incrementa en ii en 1 en cada iteracion
+            case STATE0:
+                if(ii < max_i)
                 {
-                    for( jj = 0; jj < max_j; jj++ ) //ciclo for que inicia con jj==0 acaba cuando jj<max_i, incrementa en jj en 1 en cada iteracion
-                    {
-                        mtx[ii][jj] = 0.0;//en la posicion mtx(ii,jj) coloca 0
-                    }
+                    jj = 0;
                 }
-                state = Show_Mtx_Screen;
-            break;
-            
-            case Show_Mtx_Screen:
-                register int jj;  /* Index for marching through columns */
-                register int ii;  /* Index for marching through rows    */
-                char width_value; /* Width between two values */
-
-                    /* Part 1: Compute "width_value" from specified number of "digits" */
-
-                    if( digits<LOWER_ACCURACY || digits>UPPER_ACCURACY ) //Si el dígito introducido está fuera de límites
-                    {
-                        digits = DEFAULT_ACCURACY;  //El digito introducido se asigna al valor por defecto [3]
-                    }
-
-                    width_value = digits + CHARS_PLUS_ONE;  //Se le asigna al tamaño del espacio en blanco el valor de el dígito introducido + 8 digitos
-
-                    /* Part 2: Output row by row according to specified "mtx_cols" */
-
-                    for( ii = 0; ii < mtx_rows; ii++ )  //Por cada fila de la matrix
-                    {
-                        for( jj = 0; jj < mtx_cols; jj++ )  //Por cada columna de la matrix
-                        {
-                            fprintf( stdout, "%*.*E%c", //Imprime <width_value> espacios en blanco seguido de un número en notación científica con <digits> cantidad de dígitos
-                                    width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' ); //Imprime el número y luego verifica si JJ está en la última columna, si está en la ultima columna imprime salto de línea, de lo contrario, imprime un espacio en blanco
-                        }
-                    }
-                    state = Mtx_Gauss_Elimination;
-            break;
-            
-            case Mtx_Gauss_Elimination:
-                register int jj; 
-                register int ii; 
-                char width_value;
-
-                if( digits<LOWER_ACCURACY || digits>UPPER_ACCURACY ) //Si el dígito introducido está fuera de límites
-                    digits = DEFAULT_ACCURACY;  //El digito introducido se asigna al valor por defecto [3]
-
-                width_value = digits + CHARS_PLUS_ONE;  //Se le asigna al tamaño del espacio en blanco el valor de el dígito introducido + 8 digitos
-
-                for( ii = 0; ii < mtx_rows; ii++ )  //Por cada fila de la matrix
-                    for( jj = 0; jj < mtx_cols; jj++ )  //Por cada columna de la matrix
-                        fprintf( stdout, "%*.*E%c", //Imprime <width_value> espacios en blanco seguido de un número en notación científica con <digits> cantidad de dígitos
-                                width_value, digits, mtx[ii][jj], (jj+1)%mtx_cols?' ':'\n' ); //Imprime el número y luego verifica si JJ está en la última columna, si está en la ultima columna imprime salto de línea, de lo contrario, imprime un espacio en blanco
-
-                
-                state = Mtx_Mtx_Back_Substitution;
-            break;
-
-            case Mtx_Mtx_Back_Substitution:
-                register int jj;//la variable entera ii es puesta en el register, lugar mas rapido de acceder que la memoria
-                register int ii;//la variable entera jj es puesta en el register, lugar mas rapido de acceder que la memoria
-                double temporal;
-
-                for( ii = order - 1; ii >= 0; ii-- ) { //ciclo for que inicia con ii==order-1; acaba cuando ii>=0; decrementa ii en 1 en cada iteracion
-                temporal = mtx[ii][column];//iguala temporal con la fila ii en la columna column de la funcion mtx[][]
-                for( jj = ii + 1; jj < order + 1; jj++ ) //ciclo for que inicia con jj==ii+1; acaba cuando jj<order+1; incrementa jj en 1 en cada iteracion
-                temporal = temporal - mtx[ii][jj] * mtx[jj][column];//iguala temporal con temporal temporal - mtx[ii][jj] * mtx[jj][column]
-                mtx[ii][column] = temporal / mtx[ii][ii];//iguala la fila ii en la columna column de la funcion mtx con temporal/la fila ii en la columna ii de la funcion mtx
+                else
+                {
+                    state = STATE1;
                 }
-                state = Write_Results;
-                break;
+            break;
 
-            case Write_Results:
-               for( int ii = 0; ii < order; ii++ )//ciclo for que inicia con ii==0; acaba cuando ii<order; incrementa ii en 1 en cada iteracion
-	            fprintf( stdout,"Voltage at node %d: %f volts\n", ii+1, mtx[ii][column] ); /* code */
+            case STATE1:
+                if(jj < max_j)
+                {
+                    mtx[ii][jj] = 0.0;
+                    jj = jj + 1;
+
+                    state = STATE1;
+                }
+                else 
+                {
+                    ii = ii + jj;
+
+                    state = STATE0;
+                }
             break;
         }
-        
     }
+}
+
+int Show_Mtx_Screen(double mtx[][COLS], int mtx_rows, int mtx_cols, char digits)
+{
+    typedef enum {STATE0, STATE1, STATE2};
+    static state = STATE0;
+
+    register int ii;
+    register int jj;
+    char width_value;
+
+    while(1)
+    {
+        switch (expression)
+        {
+        case STATE0:
+            
+        break;
+
+        case STATE1:
+            
+        break;
+
+        case STATE2:
+            
+        break;
+        
+        }
+    }
+}
+
+
+int Mtx_Gauss_Elimination(double mtx[][COLS], int rows, int cols)
+{
+    typedef enum {STATE0, STATE1, STATE2};
+}
+
+
+
+int Write_Results(double mtx[][COLS],int    order,int    column )
+{
+    typedef enum {STATE0, STATE1} PRINTSTATE;
+    STATE =STATE0   
+    switch ()
+    {
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
+
+    
 }
