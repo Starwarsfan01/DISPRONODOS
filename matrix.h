@@ -60,8 +60,8 @@
 
 /* --------------------- Predefined Sizes of Matrices ----------------------- */
 
-#define ROWS 100  /* Maximum number of rows in a matrix    */
-#define COLS 100  /* Maximum number of columns in a matrix */
+#define ROWS 5000  /* Maximum number of rows in a matrix    */
+#define COLS 5000  /* Maximum number of columns in a matrix */
 
 /* The following constants are exclusively used in function Show_Mtx_Screen */
 
