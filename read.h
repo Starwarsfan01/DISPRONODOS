@@ -60,7 +60,7 @@
 
 /* ---------------------- Predefined Sizes of Strings ------------------------ */
 
-#define MAX_ELEMENTS 100
+#define MAX_ELEMENTS 5000
 #define MAX_TOKENS     5
 #define STR_032       32
 #define STR_256      256
