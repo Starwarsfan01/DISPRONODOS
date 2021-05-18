@@ -23,7 +23,7 @@
 /*    This file is part of DC Solver.                                         */
 /*                                                                            */
 /*    DC Solver is free software: you can redistribute it and/or modify       */
-/*    it under the terms of the GNU General Public License as published by    */ 
+/*    it under the terms of the GNU General Public License as published by    */
 /*    the Free Software Foundation, either version 3 of the License, or       */
 /*    (at your option) any later version.                                     */
 /*                                                                            */
@@ -48,142 +48,302 @@
 
 #include "matrix.h"
 
-
-
 /************************** Prototypes of Functions ***************************/
 
 /* --------------------------- Private Functions ---------------------------- */
 
-
-
 /************************ Definition of the Structures ************************/
-
-
 
 /************************** Definitions of Functions **************************/
 
 /* ---------------------------- Public Functions ---------------------------- */
-
-/*FN****************************************************************************
-*
-*   int Mtx_Zero( double mtx[][COLS], int max_i, int max_j );
-*
-*   Return:  Number "1" for SUCCEED
-*
-*   Purpose: Fill a matrix with zeros
-*
-*   Plan:    It is not necessary
-*
-*   Register of Revisions:
-*
-*   DATE       RESPONSIBLE  COMMENT
-*   -----------------------------------------------------------------------
-*   Spt 30/17  J.C.Giraldo  Initial implementation
-*
-*******************************************************************************/
-
-typedef enum {Mtx_Zero, Show_Mtx_Screen, Mtx_Gauss_Elimination, Mtx_Mtx_Back_Substitution, Write_Results} STATE_T;
-
-int main()
+//Comprobado funciona
+int Mtx_Zero(double mtx[][COLS], int max_i, int max_j)
 {
-
-}
-
-int Mtx_Zero(double mtx[][COLS], int max_i, int max_j ) 
-{
-
-    typedef enum{STATE0, STATE1, STATE2};
-    static state = STATE1;
+    typedef enum
+    {
+        STATE0,
+        STATE1,
+    };
+    static state = STATE0;
 
     register int ii;
     register int jj;
 
-    ii=0;
+    ii = 0;
 
-    while(1)
+    while (1)
     {
         switch (state)
         {
-            case STATE0:
-                if(ii < max_i)
-                {
-                    jj = 0;
-                }
-                else
-                {
-                    state = STATE1;
-                }
+        case STATE0:
+            if (ii < max_i)
+            {
+                jj = 0;
+                state = STATE1;
+            }
+
+            else if (ii >= max_i)
+            {
+                return 1;
+            }
+
             break;
 
-            case STATE1:
-                if(jj < max_j)
-                {
-                    mtx[ii][jj] = 0.0;
-                    jj = jj + 1;
+        case STATE1:
+            if (jj < max_j)
+            {
+                mtx[ii][jj] = 0;
+                jj++;
+                state = STATE1;
+            }
 
-                    state = STATE1;
-                }
-                else 
-                {
-                    ii = ii + jj;
+            else if (jj >= max_j)
+            {
+                ii++;
+                state = STATE0;
+            }
 
-                    state = STATE0;
-                }
             break;
         }
     }
+
+    return 0;
 }
 
+//Comprobado funciona
 int Show_Mtx_Screen(double mtx[][COLS], int mtx_rows, int mtx_cols, char digits)
 {
-    typedef enum {STATE0, STATE1, STATE2};
+    typedef enum
+    {
+        STATE0,
+        STATE1,
+        STATE2
+    };
+
     static state = STATE0;
 
     register int ii;
     register int jj;
     char width_value;
 
-    while(1)
+    while (1)
     {
-        switch (expression)
+        switch (state)
         {
         case STATE0:
-            
-        break;
+            if (digits < LOWER_ACCURACY || digits > UPPER_ACCURACY)
+            {
+                digits = DEFAULT_ACCURACY;
+                width_value = digits + CHARS_PLUS_ONE;
+                ii = 0;
+
+                state = STATE1;
+            }
+            else
+            {
+                width_value = digits + CHARS_PLUS_ONE;
+                ii = 0;
+
+                state = STATE1;
+            }
+            break;
 
         case STATE1:
-            
-        break;
+            if (ii < mtx_rows)
+            {
+                jj = 0;
+                state = STATE2;
+            }
+            else if (ii == mtx_rows)
+            {
+                return 1;
+            }
+            break;
 
         case STATE2:
-            
-        break;
-        
+            if (jj == mtx_cols)
+            {
+                ii = ii + 1;
+
+                state = STATE1;
+            }
+            else if (jj < mtx_cols)
+            {
+                fprintf(stdout, "%*.*E%c",
+                        width_value, digits, mtx[ii][jj], (jj + 1) % mtx_cols ? ' ' : '\n');
+                jj = jj + 1;
+
+                state = STATE2;
+            }
+            break;
         }
     }
+    return 1;
 }
 
-
+// Comprobado funciona
 int Mtx_Gauss_Elimination(double mtx[][COLS], int rows, int cols)
 {
-    typedef enum {STATE0, STATE1, STATE2};
+    typedef enum
+    {
+        STATE0,
+        STATE1,
+        STATE2,
+        STATE3
+    };
+
+    static state = STATE0;
+
+    register int ii;
+    register int jj;
+    register int diagonal;
+    double temporal = 0.0;
+
+    while (1)
+    {
+        switch (state)
+        {
+        case STATE0:
+            if (cols >= rows)
+            {
+                diagonal = 0;
+                state = STATE1;
+            }
+            else if (cols < rows)
+            {
+                return 0;
+            }
+            break;
+
+        case STATE1:
+            if (diagonal < rows - 1)
+            {
+                ii = diagonal + 1;
+                state = STATE2;
+            }
+
+            else if (diagonal >= rows - 1)
+            {
+                return 1;
+            }
+            break;
+
+        case STATE2:
+            if (ii >= rows)
+            {
+                diagonal++;
+                state = STATE1;
+            }
+            else if (ii < rows)
+            {
+                temporal = mtx[ii][diagonal] / mtx[diagonal][diagonal];
+                jj = diagonal;
+                state = STATE3;
+            }
+            break;
+
+        case STATE3:
+            if (jj < cols)
+            {
+                mtx[ii][jj] = mtx[ii][jj] - temporal * mtx[diagonal][jj];
+                jj++;
+                state = STATE3;
+            }
+            else
+            {
+                ii++;
+                state = STATE2;
+            }
+            break;
+        }
+    }
+    return 1;
 }
 
-
-
-int Write_Results(double mtx[][COLS],int    order,int    column )
+int Mtx_Back_Substitution(
+    double mtx[][COLS], int order, int column)
 {
-    typedef enum {STATE0, STATE1} PRINTSTATE;
-    STATE =STATE0   
-    switch ()
+    typedef enum
     {
-    case /* constant-expression */:
-        /* code */
-        break;
-    
-    default:
-        break;
+        STATE0,
+        STATE1
+    };
+    static state = STATE0;
+
+    register int jj;
+    register int ii;
+    double temporal;
+
+    ii = order - 1;
+
+    while (1)
+    {
+        switch (state)
+        {
+        case STATE0:
+            if (ii >= 0)
+            {
+                temporal = mtx[ii][column];
+                jj = ii + 1;
+                state = STATE1;
+            }
+            else
+            {
+                return 1;
+            }
+            break;
+
+        case STATE1:
+            if (jj < order + 1)
+            {
+                temporal = temporal - mtx[ii][jj] * mtx[jj][column];
+                jj++;
+                state = STATE1;
+            }
+            else
+            {
+                mtx[ii][column] = temporal / mtx[ii][ii];
+                ii--;
+                state = STATE0;
+            }
+            break;
+        }
+    }
+    return 1;
+}
+
+int Write_Results(double mtx[][COLS], int order, int column)
+{
+    typedef enum
+    {
+        STATE0
+    };
+    static state = STATE0;
+
+    register int ii = 0;
+
+    while (1)
+    {
+        switch (state)
+        {
+        case STATE0:
+            if (ii < order)
+            {
+                fprintf(stdout,
+                        "Voltage at node %d: %f volts\n", ii + 1, mtx[ii][column]);
+                ii++;
+                state = STATE0;
+            }
+
+            else
+            {
+                return 1;
+            }
+
+            break;
+        }
     }
 
-    
+    return 1;
 }

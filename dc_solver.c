@@ -65,22 +65,14 @@
 
 /************************* Definition of Global Data **************************/
 
-//#include "testing_circuits.c"
-
-
-
 /************************** Definition of Data Types **************************/
 
 static ELEMENT_T netlist[MAX_ELEMENTS];
 static double matrix[ROWS][COLS];
 
-
-
 /********************************* Prototypes *********************************/
 
-int Nodal_Formulation( ELEMENT_T [], int, double (*)[COLS], int );
-
-
+int Nodal_Formulation(ELEMENT_T[], int, double (*)[COLS], int);
 
 /******************************* Main Function ********************************/
 
@@ -104,53 +96,53 @@ int Nodal_Formulation( ELEMENT_T [], int, double (*)[COLS], int );
 *
 *******************************************************************************/
 
-int
-main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
-int  nodes, elements;
-char filename[STR_032] = { '\0' };
+	int nodes, elements;
+	char filename[STR_032] = {'\0'};
 
-/* Part 1: Handle arguments in command line */
+	/* Part 1: Handle arguments in command line */
 
-if( argc == 1 ) {
-	fprintf( stderr, "Please ENTER filename: " );
-	fscanf( stdin, "%s", filename );
-} else if( argc == 2 ) {
-	strcpy( filename, argv[1] );
-} else {
-	fprintf( stderr, "Usage: %s [ filename ]\n", argv[0] );
-	exit( 1 );
-}
+	if (argc == 1)
+	{
+		fprintf(stderr, "Please ENTER filename: ");
+		fscanf(stdin, "%s", filename);
+	}
+	else if (argc == 2)
+	{
+		strcpy(filename, argv[1]);
+	}
+	else
+	{
+		fprintf(stderr, "Usage: %s [ filename ]\n", argv[0]);
+		exit(1);
+	}
 
-/* Part 2: Read file and prepare netlist array */
+	/* Part 2: Read file and prepare netlist array */
 
-Read_File( filename, netlist, MAX_ELEMENTS );
+	Read_File(filename, netlist, MAX_ELEMENTS);
 
-nodes    = Get_Number_Nodes( netlist, MAX_ELEMENTS );
-elements = Get_Number_Elements( netlist, MAX_ELEMENTS );
+	nodes = Get_Number_Nodes(netlist, MAX_ELEMENTS);
+	elements = Get_Number_Elements(netlist, MAX_ELEMENTS);
 
-/* Part 3: Print netlist from data in array to verify */
+	/* Part 3: Print netlist from data in array to verify */
 
-Print_Netlist( netlist, MAX_ELEMENTS );
+	Print_Netlist(netlist, MAX_ELEMENTS);
 
-/* Part 4: Prepare matrix with elements from netlist array */
+	/* Part 4: Prepare matrix with elements from netlist array */
 
-Nodal_Formulation( netlist, elements, matrix, nodes );
+	Nodal_Formulation(netlist, elements, matrix, nodes);
 
-/* Part 5: Solve the matrix */
+	/* Part 5: Solve the matrix */
 
-Mtx_Gauss_Elimination( matrix, nodes, nodes+1 );
-Mtx_Back_Substitution( matrix, nodes, nodes );
+	Mtx_Gauss_Elimination(matrix, nodes, nodes + 1);
+	Mtx_Back_Substitution(matrix, nodes, nodes);
 
-/* Part 6: Deliver results to user */
-
-Write_Results( matrix, nodes, nodes );
-
-return 0;
+	/* Part 6: Deliver results to user */
+	Write_Results(matrix, nodes, nodes);
+	return 0;
 
 } /* main */
-
-
 
 /*FN****************************************************************************
 *
@@ -169,46 +161,48 @@ return 0;
 *
 *******************************************************************************/
 
-int
-Nodal_Formulation(
-ELEMENT_T net[],           /* In: Netlist array */
-int       elements,        /* In: Size of netlist array     */
-double    mtx[ROWS][COLS], /* In/Out: Matrix to be computed */
-int       nodes )          /* In: Matrix order == nodes     */
+int Nodal_Formulation(
+	ELEMENT_T net[],		/* In: Netlist array */
+	int elements,			/* In: Size of netlist array     */
+	double mtx[ROWS][COLS], /* In/Out: Matrix to be computed */
+	int nodes)				/* In: Matrix order == nodes     */
 {
-TYPE_T type;
-int    n_pos, n_neg;
-double value;
+	TYPE_T type;
+	int n_pos, n_neg;
+	double value;
 
-for( int i = 0; i < elements; i++ ) {
+	for (int i = 0; i < elements; i++)
+	{
 
-	type  = Get_Type( netlist, MAX_ELEMENTS, i );
-	n_pos = Get_Node_Positive( netlist, MAX_ELEMENTS, i );
-	n_neg = Get_Node_Negative( netlist, MAX_ELEMENTS, i );
-	value = Get_Value( netlist, MAX_ELEMENTS, i );
+		type = Get_Type(netlist, MAX_ELEMENTS, i);
+		n_pos = Get_Node_Positive(netlist, MAX_ELEMENTS, i);
+		n_neg = Get_Node_Negative(netlist, MAX_ELEMENTS, i);
+		value = Get_Value(netlist, MAX_ELEMENTS, i);
 
-	if( type == RESISTOR ) {
+		if (type == RESISTOR)
+		{
 
-		if( n_pos != 0 )
-			matrix[n_pos-1][n_pos-1] += 1.0/value;
-		if( n_neg != 0 )
-			matrix[n_neg-1][n_neg-1] += 1.0/value;
-		if( n_pos != 0 && n_neg != 0 ) {
-			matrix[n_neg-1][n_pos-1] += (-1.0/value);
-			matrix[n_pos-1][n_neg-1] += (-1.0/value);
+			if (n_pos != 0)
+				matrix[n_pos - 1][n_pos - 1] += 1.0 / value;
+			if (n_neg != 0)
+				matrix[n_neg - 1][n_neg - 1] += 1.0 / value;
+			if (n_pos != 0 && n_neg != 0)
+			{
+				matrix[n_neg - 1][n_pos - 1] += (-1.0 / value);
+				matrix[n_pos - 1][n_neg - 1] += (-1.0 / value);
+			}
+		}
+		else if (type == CURRENT_SOURCE)
+		{
+
+			if (n_pos != 0)
+				matrix[n_pos - 1][nodes] += value;
+			if (n_neg != 0)
+				matrix[n_neg - 1][nodes] += (-value);
 		}
 
-	} else	if( type == CURRENT_SOURCE ) {
+	} /* for */
 
-		if( n_pos != 0 )
-			matrix[n_pos-1][nodes] += value;
-		if( n_neg != 0 )
-			matrix[n_neg-1][nodes] += (-value);
-
-	}
-
-} /* for */
-
-return 1;
+	return 1;
 
 } /* Nodal_Formulation */
