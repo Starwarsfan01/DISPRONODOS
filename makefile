@@ -1,3 +1,11 @@
+################################################################################
+#               MAKEFILE created by Ángel D. Talero 27/Apr 2021                #
+# 																			   #
+#	make 		- compiles dc_solver										   #
+#	make clean 	- clean compilation files									   #
+#   make fsm 	- compiles a FSM version of dc_solver						   #			
+################################################################################
+
 CC		= @gcc
 OBJS	= matrix.o read.o
 CFLAGS	= -Wall

@@ -57,7 +57,23 @@
 /************************** Definitions of Functions **************************/
 
 /* ---------------------------- Public Functions ---------------------------- */
-//Comprobado funciona
+/*FN****************************************************************************
+*
+*   int Mtx_Zero( double mtx[][COLS], int max_i, int max_j );
+*
+*   Return:  Number "1" for SUCCEED
+*
+*   Purpose: Fill a matrix with zeros
+*
+*   Plan:    It is not necessary
+*
+*   Source: J.C Giraldo's initial algorithm
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 17/21  Talero, A.D  Initial implementation
+*
+*******************************************************************************/
 int Mtx_Zero(double mtx[][COLS], int max_i, int max_j)
 {
     typedef enum
@@ -111,7 +127,42 @@ int Mtx_Zero(double mtx[][COLS], int max_i, int max_j)
     return 0;
 }
 
-//Comprobado funciona
+/*FN****************************************************************************
+*
+*   int Show_Mtx_Screen( double (*mtx)[COLS],
+*                        int mtx_rows, int mtx_cols, char digits );
+*
+*   Return:    Number "1" for SUCCEED
+*
+*   Purpose:   This function displays the contents of a bidimensional array.
+*              The desired number of significant digits must be specified.
+*              This parameter can be any number between 2 and 18 inclusive,
+*              otherwise it will be used by default 3 significant digits.
+*
+*   Versions:
+*         Version 1: Output to standard file (similar to Write_Mtx_Text)
+*         Version 2: Output to screen with arrows
+*
+*   Notes:     - The literal constant 8 specifies the lowest number of
+*                characters needed, besides the number of specified digits.
+*                The next number in addition to the 3 digits, needs space
+*                for 7 additional characters: -1.11E+300 and an extra space.
+*              - It doesn't need a file name because output goes to screen.
+*              - It has been checked before that the size of input file is
+*                adequate.
+*              - Include "conio.h", "dos.h"
+*
+*   Source: J.C Giraldo's initial algorithm and 
+*           Caicedo, J.J's FSM algorith diagram
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 17/21  Conde, J.D   Initial implementation
+*
+*
+*******************************************************************************/
 int Show_Mtx_Screen(double mtx[][COLS], int mtx_rows, int mtx_cols, char digits)
 {
     typedef enum
@@ -182,7 +233,28 @@ int Show_Mtx_Screen(double mtx[][COLS], int mtx_rows, int mtx_cols, char digits)
     return 1;
 }
 
-// Comprobado funciona
+/*FN****************************************************************************
+*
+*   int Mtx_Gauss_Elimination( double mtx[ROWS][COLS], int rows, int cols );
+*
+*   Return:  Number "1" for SUCCEED
+*
+*   Purpose: Solve matrix by Gaussian elimination
+*
+*   Plan:    It is not necessary
+*
+*   Source: J.C Giraldo's initial algorithm and 
+*           Caicedo, J.J's FSM algorith diagram
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 17/21  Conde, J.D   Initial implementation
+*   May 17/21  Talero, A.D  Fixed bug
+*
+*
+*******************************************************************************/
 int Mtx_Gauss_Elimination(double mtx[][COLS], int rows, int cols)
 {
     typedef enum
@@ -261,6 +333,29 @@ int Mtx_Gauss_Elimination(double mtx[][COLS], int rows, int cols)
     return 1;
 }
 
+/*FN****************************************************************************
+*
+*   int Mtx_Back_Substitution( double mtx[][COLS], int order );
+*
+*   Return:  Number "1" for SUCCEED
+*
+*   Purpose: Perform a back substitution to solve set of linear equations
+*
+*   Plan:    It is not necessary
+*
+*   Source:  http://blog.abhishekg.com/2014/09/
+*   gauss-elimination-method-in-c-language-using-lower-triangular-matrix/
+*   and Caicedo, J.J's FSM algorith diagram
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 17/21  Conde, J.D   Initial implementation
+*   May 17/21  Talero, A.D  Fixed bug
+*
+*
+*******************************************************************************/
 int Mtx_Back_Substitution(
     double mtx[][COLS], int order, int column)
 {
@@ -313,6 +408,27 @@ int Mtx_Back_Substitution(
     return 1;
 }
 
+/*FN****************************************************************************
+*
+*   int Write_Results( double mtx[ROWS][COLS], int order, int column );
+*
+*   Purpose: Write voltages in every node
+*
+*   Return:  Nothing
+*
+*   Register of Revisions (Debugging Process):
+*
+*   Source: J.C Giraldo's initial algorithm and 
+*           Caicedo, J.J's FSM algorith diagram
+*
+*   Register of Revisions:
+*
+*   DATE       RESPONSIBLE  COMMENT
+*   -----------------------------------------------------------------------
+*   May 17/21  Conde, J.D   Initial implementation
+*   May 17/21  Talero, A.D  Fixed bug
+*
+*******************************************************************************/
 int Write_Results(double mtx[][COLS], int order, int column)
 {
     typedef enum
